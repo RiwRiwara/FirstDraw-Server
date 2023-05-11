@@ -24,7 +24,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['Admin', 'User'],
         default: 'User'
-    }
+    },
+    bio: {
+        type: String,
+        required: false,
+        unique: false
+    },
 }, { timestamps: true })
 
 

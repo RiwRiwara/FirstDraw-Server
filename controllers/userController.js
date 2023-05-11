@@ -20,21 +20,21 @@ exports.getAllUser = (req, res) => {
         });
 };
 
-//get user by ID
-exports.getUserById = (req, res) => {
-    const { id } = req.params;
+//get user by Email
+exports.getUserByEmail = (req, res) => {
+    const { email } = req.params;
 
-    User.findOne({ _id: id })
+    User.findOne({ email })
         .then((user) => {
             if (!user) {
-                console.log(`User with id ${id} not found`);
+                console.log(`User with email ${email} not found`);
                 return res.status(404).json({ error: "User not found" });
             }
 
             res.json(user);
         })
         .catch((err) => {
-            console.error(`Error fetching user with id ${id}:`, err);
+            console.error(`Error fetching user with email ${email}:`, err);
             res.status(500).json({ error: "An error occurred while fetching the user." });
         });
 };
@@ -54,7 +54,7 @@ exports.loginUser = async (req, res) => {
         }
         const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: '1d' });
         const isAdmin = user.role === 'Admin'; 
-        res.status(200).json({ token, isAdmin }); 
+        res.status(200).json({ token, isAdmin , user}); 
 
     } catch (error) {
         res.status(500).json({ error: 'Failed to authenticate user' });
@@ -63,7 +63,7 @@ exports.loginUser = async (req, res) => {
 
 //Sign up user
 exports.signupUser = async (req, res) => {
-    const { displayname, email, password } = req.body;
+    const { displayname, email, password, bio } = req.body;
 
     // Validate user input
     if (!email || !password) {
@@ -80,7 +80,7 @@ exports.signupUser = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     try {
-        User.create({ displayname, email, password: hashedPassword })
+        User.create({ displayname, email, password: hashedPassword, bio:bio })
             .then((users) => {
                 const token = createToken(users._id)
                 res.status(200).json({ email, token });
@@ -95,34 +95,49 @@ exports.signupUser = async (req, res) => {
 
 // Edit user by email
 exports.editUser = async (req, res) => {
-    const { email, password, tier, role } = req.body;
+    
+    const {emailSearch} = req.params
+    const { password, displayname, tier, role, bio } = req.body;
 
-    // Validate user input
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Please provide an email and password' });
-    }
-    if (!validator.isEmail(email)) {
-        return res.status(400).json({ error: 'Email not valid!' });
-    }
-    if (!validator.isStrongPassword(password)) {
-        return res.status(400).json({ error: 'Password not strong!' });
+    const updateFields = {};
+
+    if (password) {
+        if (!validator.isStrongPassword(password)) {
+            return res.status(400).json({ error: 'Password not strong!' });
+        }
+        // Hash user's password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        updateFields.password = hashedPassword;
     }
 
-    // Hash user's password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    if (displayname) {
+        updateFields.displayname = displayname;
+    }
+
+    if (tier) {
+        updateFields.tier = tier;
+    }
+
+    if (role) {
+        updateFields.role = role;
+    }
+    if (bio) {
+        updateFields.bio = bio;
+    }
 
     try {
-        const user = await User.findOneAndUpdate({ email }, { password: hashedPassword, tier, role }, { new: true });
+        const user = await User.findOneAndUpdate({ email:emailSearch}, updateFields, { new: true });
         if (!user) {
-            console.log(`User with email ${email} not found`);
+            console.log(`User with emailSearch ${emailSearch} not found`);
             return res.status(404).json({ error: "User not found" });
         }
         const token = createToken(user._id);
         res.status(200).json({ email: user.email, token });
 
     } catch (error) {
-        console.error(`Error updating user with email ${email}:`, error);
+        console.error(`Error updating user with email ${emailSearch}:`, error);
         res.status(500).json({ error: "An error occurred while updating the user." });
     }
+    
 };

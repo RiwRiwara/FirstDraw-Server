@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-    getUserById,
+    getUserByEmail,
     getAllUser,
     loginUser,
     signupUser,
@@ -11,9 +11,9 @@ const router = express.Router();
 
 
 router.get("/user", getAllUser);
-router.get("/user/:id", getUserById);
+router.get("/user/:email", getUserByEmail);
 router.post("/user/login", loginUser);
 router.post("/user/signup", signupUser);
-router.put('/user/:email', editUser);
+router.put('/user/:emailSearch', editUser);
 
 module.exports = router;

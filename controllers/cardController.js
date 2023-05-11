@@ -39,7 +39,19 @@ exports.createCard = (req, res) => {
 
 // Get all cards
 exports.getAllCards = (req, res) => {
-  Card.find({})
+  const limit = parseInt(req.query.limit) || 10; // Default limit to 10 if not specified
+  const offset = parseInt(req.query.offset) || 0; // Default offset to 0 if not specified
+  const type = req.query.type || '';
+  const race = req.query.race || '';
+  const attribute = req.query.attribute || '';
+
+  Card.find({
+    type: { $regex: type, $options: 'i' },
+    race: { $regex: race, $options: 'i' },
+    attribute: { $regex: attribute, $options: 'i' },
+  })
+    .skip(offset)
+    .limit(limit)
     .then((cards) => {
       res.json(cards);
     })
@@ -68,13 +80,3 @@ exports.getCardById = (req, res) => {
     });
 };
 
-exports.getRandomCards = (req, res) => {
-  Card.aggregate([{ $sample: { size: 10 } }])
-    .then((cards) => {
-      res.json(cards);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).json({ error: "An error occurred while fetching random cards." });
-    });
-};

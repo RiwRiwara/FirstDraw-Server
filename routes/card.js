@@ -2,15 +2,13 @@ const express = require("express");
 const {
     getCardById,
     getAllCards,
+    createCard
 } = require("../controllers/cardController");
 
 const router = express.Router();
 
-
-// Get all cards
 router.get("/cards", getAllCards);
-// Get a card by id
 router.get("/cards/:id", getCardById);
-//random 10 cards
+router.post("/cards/create", createCard);
 
 module.exports = router;

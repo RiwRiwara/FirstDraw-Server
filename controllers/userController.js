@@ -97,7 +97,7 @@ exports.signupUser = async (req, res) => {
 exports.editUser = async (req, res) => {
     
     const {emailSearch} = req.params
-    const { password, displayname, tier, role, bio } = req.body;
+    const { password, displayname, tier, role, bio, profile_img } = req.body;
 
     const updateFields = {};
 
@@ -113,6 +113,9 @@ exports.editUser = async (req, res) => {
 
     if (displayname) {
         updateFields.displayname = displayname;
+    }
+    if (profile_img) {
+        updateFields.profile_img = profile_img;
     }
 
     if (tier) {

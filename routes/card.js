@@ -1,14 +1,16 @@
 const express = require("express");
 const {
-    getCardById,
-    getAllCards,
-    createCard
+    createCard,
+    removeCardById
 } = require("../controllers/cardController");
+const {
+    getAllCards
+} = require("../controllers/cardSearching")
 
 const router = express.Router();
 
 router.get("/cards", getAllCards);
-router.get("/cards/:id", getCardById);
+router.delete("/cards/:id", removeCardById);
 router.post("/cards/create", createCard);
 
 module.exports = router;

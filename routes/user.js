@@ -1,6 +1,7 @@
 const express = require("express");
+const { authenticate } = require("../middleware/authenticate");
 const {
-    getUserByEmail,
+    getUser,
     getAllUser,
     loginUser,
     signupUser,
@@ -9,11 +10,8 @@ const {
 
 const router = express.Router();
 
-
-router.get("/user", getAllUser);
-router.get("/user/:email", getUserByEmail);
-router.post("/user/login", loginUser);
-router.post("/user/signup", signupUser);
+router.get("/users/",authenticate, getAllUser);
+router.get("/user/:email", getUser);
 router.put('/user/:emailSearch', editUser);
 
 module.exports = router;

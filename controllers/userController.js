@@ -20,10 +20,9 @@ exports.getAllUser = (req, res) => {
         });
 };
 
-//get user by Email
-exports.getUserByEmail = (req, res) => {
+//get user by Email and id
+exports.getUser = (req, res) => {
     const { email } = req.params;
-
     User.findOne({ email })
         .then((user) => {
             if (!user) {
@@ -39,59 +38,7 @@ exports.getUserByEmail = (req, res) => {
         });
 };
 
-//login user
-exports.loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Please provide an email and password' });
-    }
 
-    try {
-        const user = await User.findOne({ email });
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid email or password' });
-        }
-        const token = jwt.sign({ id: user._id }, process.env.SECRET, { expiresIn: '1d' });
-        const isAdmin = user.role === 'Admin'; 
-        res.status(200).json({ token, isAdmin , user}); 
-
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to authenticate user' });
-    }
-};
-
-//Sign up user
-exports.signupUser = async (req, res) => {
-    const { displayname, email, password, bio } = req.body;
-
-    // Validate user input
-    if (!email || !password) {
-        return res.status(400).json({ error: 'Please provide an email and password' });
-    }
-    if (!validator.isEmail(email)) {
-        return res.status(400).json({ error: 'Email not valid!' });
-    }
-    if (!validator.isStrongPassword(password)) {
-        return res.status(400).json({ error: 'Password not strong!' });
-    }
-
-    // Hash user's password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    try {
-        User.create({ displayname, email, password: hashedPassword, bio:bio })
-            .then((users) => {
-                const token = createToken(users._id)
-                res.status(200).json({ email, token });
-            })
-            .catch((err) => {
-                res.status(500).json({ error: "Email already used!" });
-            });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create user' });
-    }
-};
 
 // Edit user by email
 exports.editUser = async (req, res) => {

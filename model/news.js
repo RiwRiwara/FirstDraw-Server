@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose")
 
-const blogSchema = mongoose.Schema({
+const newsSchema = mongoose.Schema({
     title:{
         type:String,
         require:true
@@ -15,10 +15,6 @@ const blogSchema = mongoose.Schema({
         type:String,
         require:false
     },
-    author_id:{
-        type:String,
-        require:false
-    },
     slug:{
         type:String,
         lowercase:true,
@@ -26,4 +22,4 @@ const blogSchema = mongoose.Schema({
     }
 }, {timestamps:true})
 
-module.exports = mongoose.model("Blogs", blogSchema)
+module.exports = mongoose.model("News", newsSchema)

@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const blogRoute = require("./routes/blog");
 const cardRoute = require("./routes/card");
 const userRoute = require("./routes/user");
+const authRoute = require("./routes/authRoutes/authenticateRoutes");
 
 const app = express()
 const PORT = process.env.PORT || 5000;
@@ -42,5 +43,6 @@ app.get('/', (req, res)=>{
 app.use('/api', blogRoute)
 app.use("/api", cardRoute);
 app.use("/api", userRoute);
+app.use("/api", authRoute);
 
 module.exports = app

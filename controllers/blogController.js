@@ -4,7 +4,7 @@ const Blogs = require("../model/blogs")
 const {v4:uuidv4} = require('uuid');
 //create data
 exports.create = (req, res) => {
-    const {title, content, author} = req.body;
+    const {title, content, author, author_id} = req.body;
     slug = slugify(title);
 
     //Validate
@@ -18,7 +18,7 @@ exports.create = (req, res) => {
     }
 
     //Save data
-    Blogs.create({title, content, author, slug})
+    Blogs.create({title, content, author,author_id, slug})
     .then((blog) => {
       res.json(blog);
     })

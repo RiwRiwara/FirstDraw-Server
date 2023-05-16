@@ -1,5 +1,5 @@
 // Call Database
-const Card = require("../model/cards");
+const Card = require("../../model/cards");
 
 // Create card
 exports.createCard = (req, res) => {

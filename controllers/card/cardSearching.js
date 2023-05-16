@@ -1,4 +1,4 @@
-const Card = require("../model/cards");
+const Card = require("../../model/cards");
 // ============================ SEARCH CARD ====================================================
 const handleCardSearchResponse = (promise, res, errorMessage) => {
     promise
@@ -14,7 +14,7 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
   const createFilters = (req) => {
     const filters = {};
   
-    ['frameType', 'desc', 'archetype'].forEach((field) => {
+    ['frameType', 'desc', 'archetype', 'attribute', 'type'].forEach((field) => {
       if (req.query[field]) {
         filters[field] = req.query[field].trim();
       }
@@ -34,7 +34,11 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
   
     if (req.query.level) {
       const levels = req.query.level.split(',').map(Number);
-      filters.level = { $in: levels };
+      if(levels.includes(0)){
+        filters.level = { $in: [1,2,3,4,5,6,7,8,9,10]};
+      }else{
+        filters.level = { $in: levels };
+      }
     }
   
     if (req.query.name) {
@@ -57,12 +61,14 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
   
   exports.getAllCards = (req, res) => {
     if (req.query.id) {
+      // Fetch a single card by ID
       handleCardSearchResponse(
-        Card.findOne({ id: req.query.id }),
+        Card.findOne({ _id: req.query.id }),
         res,
         "An error occurred while fetching the card."
       );
     } else if (req.query.ran) {
+      // Fetch random cards
       const ran = parseInt(req.query.ran);
       if (ran) {
         handleCardSearchResponse(
@@ -74,15 +80,26 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
     } else {
       const limit = parseInt(req.query.limit) || 10;
       const offset = parseInt(req.query.offset) || 0;
-      const filters = createFilters(req)
-      console.log(filters)
+      const filters = createFilters(req);
+  
+      // Sorting options
+      const sortOptions = {};
+      if (req.query.sort === "az") {
+        // Sort by name ascending (A-Z)
+        sortOptions.name = 1;
+      } else if (req.query.sort === "za") {
+        // Sort by name descending (Z-A)
+        sortOptions.name = -1;
+      }
+  
       handleCardSearchResponse(
-        Card.find(filters).skip(offset).limit(limit),
+        Card.find(filters).sort(sortOptions).skip(offset).limit(limit),
         res,
         "An error occurred while fetching all cards."
       );
     }
   };
+  
   
   
   

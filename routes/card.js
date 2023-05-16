@@ -2,10 +2,10 @@ const express = require("express");
 const {
     createCard,
     removeCardById
-} = require("../controllers/cardController");
+} = require("../controllers/card/cardController");
 const {
     getAllCards
-} = require("../controllers/cardSearching")
+} = require("../controllers/card/cardSearching")
 
 const router = express.Router();
 

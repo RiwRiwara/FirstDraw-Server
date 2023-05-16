@@ -3,8 +3,6 @@ const { authenticate } = require("../middleware/authenticate");
 const {
     getUser,
     getAllUser,
-    loginUser,
-    signupUser,
     editUser
 } = require("../controllers/userController");
 

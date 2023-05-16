@@ -11,6 +11,7 @@ const blogRoute = require("./routes/blog");
 const cardRoute = require("./routes/card");
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/authRoutes/authenticateRoutes");
+const collectionRoute = require("./routes/collection");
 
 const app = express()
 const PORT = process.env.PORT || 5000;
@@ -44,5 +45,6 @@ app.use('/api', blogRoute)
 app.use("/api", cardRoute);
 app.use("/api", userRoute);
 app.use("/api", authRoute);
+app.use("/api", collectionRoute);
 
 module.exports = app

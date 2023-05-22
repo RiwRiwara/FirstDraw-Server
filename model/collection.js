@@ -9,10 +9,15 @@ const collectionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  itemIds: [{
+  itemIds: [mongoose.Schema.Types.Mixed],
+  Description: {
     type: String,
-    ref: "Item"
-  }],
+    required: false
+  },
+  tag: {
+    type: [String],
+    required: false
+  },
   typeCollect: {
     type: String,
     enum: ["card", "deck"],

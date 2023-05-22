@@ -14,7 +14,7 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
   const createFilters = (req) => {
     const filters = {};
   
-    ['frameType', 'desc', 'archetype', 'attribute', 'type'].forEach((field) => {
+    ['frameType', 'desc', 'archetype', 'attribute', 'type', 'race'].forEach((field) => {
       if (req.query[field]) {
         filters[field] = req.query[field].trim();
       }
@@ -61,11 +61,11 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
   
   exports.getAllCards = (req, res) => {
     if (req.query.id) {
-      // Fetch a single card by ID
+      const cardIds = req.query.id.split(',').map(id => id.trim());
       handleCardSearchResponse(
-        Card.findOne({ _id: req.query.id }),
+        Card.find({ _id: { $in: cardIds } }),
         res,
-        "An error occurred while fetching the card."
+        "An error occurred while fetching the cards."
       );
     } else if (req.query.ran) {
       // Fetch random cards
@@ -99,8 +99,4 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
       );
     }
   };
-  
-  
-  
-  
   

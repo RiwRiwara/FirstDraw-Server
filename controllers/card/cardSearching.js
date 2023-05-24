@@ -35,7 +35,7 @@ const handleCardSearchResponse = (promise, res, errorMessage) => {
     if (req.query.level) {
       const levels = req.query.level.split(',').map(Number);
       if(levels.includes(0)){
-        filters.level = { $in: [1,2,3,4,5,6,7,8,9,10]};
+        filters.level = { $in: [1,2,3,4,5,6,7,8,9,10,12,13,14,15]};
       }else{
         filters.level = { $in: levels };
       }

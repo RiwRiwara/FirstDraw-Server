@@ -22,21 +22,22 @@ exports.getAllUser = (req, res) => {
 
 //get user by Email and id
 exports.getUser = (req, res) => {
-    const { email } = req.params;
-    User.findOne({ email })
-        .then((user) => {
-            if (!user) {
-                console.log(`User with email ${email} not found`);
-                return res.status(404).json({ error: "User not found" });
-            }
-
-            res.json(user);
-        })
-        .catch((err) => {
-            console.error(`Error fetching user with email ${email}:`, err);
-            res.status(500).json({ error: "An error occurred while fetching the user." });
-        });
-};
+    const { id } = req.query;
+    User.findOne({ _id: id })
+      .then((user) => {
+        if (!user) {
+          console.log(`User with id ${id} not found`);
+          return res.status(404).json({ error: "User not found" });
+        }
+  
+        res.json(user);
+      })
+      .catch((err) => {
+        console.error(`Error fetching user with id ${id}:`, err);
+        res.status(500).json({ error: "An error occurred while fetching the user." });
+      });
+  };
+  
 
 
 

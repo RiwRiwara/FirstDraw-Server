@@ -1,16 +1,29 @@
 // Call Database
 const Card = require("../../model/cards");
 
-// Create card
-exports.createCard = (req, res) => {
-  const { id, name, type, frameType, desc, atk, def, level, race, attribute, card_sets, card_images, card_prices } = req.body;
-  // Validate data
-  if (!id || !name || !type || !frameType || !desc || !atk || !def || !level || !race || !attribute || !card_sets || !card_images || !card_prices) {
-    return res.status(400).json({ error: "Missing required fields" });
+async function updateCard(cardId, updateFields) {
+  try {
+    const updatedCard = await Card.findByIdAndUpdate(
+      cardId,
+      { $set: updateFields },
+      { new: true }
+    );
+
+    if (updatedCard) {
+      console.log("Card updated successfully:", updatedCard);
+    } else {
+      console.log("Card not found");
+    }
+  } catch (error) {
+    console.error("Error updating card:", error);
   }
+}
+
+exports.createCard = (req, res) => {
+  const { name, type, frameType, desc, atk, def, level, race, attribute, card_sets, card_images, card_prices } = req.body;
+
   // Save card
   const card = new Card({
-    id,
     name,
     type,
     frameType,
@@ -27,6 +40,12 @@ exports.createCard = (req, res) => {
 
   card.save()
     .then((card) => {
+      card.id = card._id;
+      const updateFields = {
+        id: card._id,
+      };
+
+      updateCard(card._id, updateFields);
       res.json(card);
     })
     .catch((err) => {
@@ -41,7 +60,7 @@ exports.createCard = (req, res) => {
 exports.removeCardById = (req, res) => {
   const { id } = req.params;
 
-  Card.deleteOne({ id: id })
+  Card.deleteOne({ _id: id })
     .then((card) => {
       if (!card) {
         console.log(`Card with id ${id} not found`);

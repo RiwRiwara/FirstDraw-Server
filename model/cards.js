@@ -2,45 +2,44 @@ const mongoose = require("mongoose");
 
 const cardSchema = new mongoose.Schema({
   id: {
-    type: Number,
-    required: true,
-    unique: true 
+    type: String,
+    required: false,
   },
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   type: {
     type: String,
-    required: true,
+    required: false,
   },
   frameType: {
     type: String,
-    required: true,
+    required: false,
   },
   desc: {
     type: String,
-    required: true,
+    required: false,
   },
   atk: {
     type: Number,
-    required: true,
+    required: false,
   },
   def: {
     type: Number,
-    required: true,
+    required: false,
   },
   level: {
     type: Number,
-    required: true,
+    required: false,
   },
   race: {
     type: String,
-    required: true,
+    required: false,
   },
   attribute: {
     type: String,
-    required: true,
+    required: false,
   },
   card_sets: [{
     set_name: String,
@@ -62,6 +61,6 @@ const cardSchema = new mongoose.Schema({
     amazon_price: String,
     coolstuffinc_price: String,
   }]
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("Cards", cardSchema);

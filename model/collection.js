@@ -9,6 +9,10 @@ const collectionSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  desc: {
+    type: String,
+    required: false
+  },
   itemIds: [mongoose.Schema.Types.Mixed],
   Description: {
     type: String,

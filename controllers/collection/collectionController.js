@@ -75,12 +75,15 @@ exports.deleteCollectionById = (req, res) => {
 // Update a collection by ID
 exports.updateCollectionById = (req, res) => {
   const collectionId = req.params.collectionId;
-  const { collection_name, addItems, removeItems } = req.body;
+  const { collection_name, addItems, removeItems, desc } = req.body;
 
   const updateData = {};
 
   if (collection_name) {
     updateData.collection_name = collection_name;
+  }
+  if (desc) {
+    updateData.desc = desc;
   }
 
   // Get the typeCollect from the collection document

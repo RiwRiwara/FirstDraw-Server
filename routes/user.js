@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 router.get("/users/",authenticate, getAllUser);
-router.get("/user/:email", getUser);
+router.get("/user/", getUser);
 router.put('/user/:emailSearch', editUser);
 
 module.exports = router;

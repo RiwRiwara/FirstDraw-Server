@@ -75,3 +75,22 @@ exports.removeCardById = (req, res) => {
 };
 
 
+exports.updateCard = (req, res) => {
+  const { id } = req.params;
+  const updateFields = req.body;
+  Card.findOneAndUpdate({ _id: id }, { $set: updateFields }, { new: true })
+  .then((updatedCard) => {
+    if (!updatedCard) {
+      console.log(`Card with id ${id} not found`);
+      return res.status(404).json({ error: "Card not found" });
+    }
+    res.json(updatedCard);
+  })
+  .catch((err) => {
+    console.error(`Error updating card with id ${id}:`, err);
+    res.status(500).json({ error: "An error occurred while updating the card." });
+  });
+
+};
+
+

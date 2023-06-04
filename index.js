@@ -12,6 +12,7 @@ const cardRoute = require("./routes/card");
 const userRoute = require("./routes/user");
 const authRoute = require("./routes/authRoutes/authenticateRoutes");
 const collectionRoute = require("./routes/collection");
+const reqRoute = require("./routes/request")
 
 const app = express()
 const PORT = process.env.PORT || 5000;
@@ -46,5 +47,6 @@ app.use("/api", cardRoute);
 app.use("/api", userRoute);
 app.use("/api", authRoute);
 app.use("/api", collectionRoute);
+app.use("/api", reqRoute);
 
 module.exports = app

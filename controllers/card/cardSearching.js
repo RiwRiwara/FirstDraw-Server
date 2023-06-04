@@ -68,7 +68,6 @@ exports.getAllCards = (req, res) => {
       "An error occurred while fetching the cards."
     );
   } else if (req.query.ran) {
-    // Fetch random cards
     const ran = parseInt(req.query.ran);
     if (ran) {
       handleCardSearchResponse(
@@ -84,18 +83,15 @@ exports.getAllCards = (req, res) => {
 
     // Sorting options
     const sortOptions = {};
-    if (req.query.sort === "az") {// Sort by name ascending (A-Z)
+    
+    if (req.query.sort === "az") {
       sortOptions.name = 1;
-    } else if (req.query.sort === "za") { // Sort by name descending (Z-A)
+    } else if (req.query.sort === "za") { 
       sortOptions.name = -1;
+    }else   { 
+      sortOptions.createdAt = parseInt(req.query.sort)
     }
     
-    // Adding date filter
-    if (req.query.date === "new") {
-      filters.createdAt = { $gte: new Date() }; // Filter by documents created on or after current date
-    } else if (req.query.date === "old") {
-      filters.createdAt = { $lt: new Date() }; // Filter by documents created before current date
-    }
 
 
     handleCardSearchResponse(

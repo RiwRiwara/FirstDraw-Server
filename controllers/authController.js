@@ -4,7 +4,7 @@ const validator = require("validator");
 const jwt = require('jsonwebtoken');
 
 const createToken = (_id) => {
-  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '2d' });
+  return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '1d' });
 };
 
 // Middleware to check token and attach user to request object

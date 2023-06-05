@@ -26,7 +26,7 @@ exports.getRequest = async (req, res) => {
         }
         
         else if (!req.query.all) {
-            const requests = await Request.find({});
+            const requests = await Request.find({}).sort({updatedAt:-1});
             res.status(200).json(requests);
         } else {
             res.status(400).json({ error: 'Invalid request. Please provide an id or all.' });

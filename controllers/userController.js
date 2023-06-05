@@ -4,14 +4,25 @@ const validator = require("validator")
 const jwt = require('jsonwebtoken')
 
 const createToken = (_id) => {
-    return jwt.sign({_id}, process.env.SECRET, {expiresIn: '3d'})
+    return jwt.sign({ _id }, process.env.SECRET, { expiresIn: '1d' })
 }
 
 
-// Get all user
 exports.getAllUser = (req, res) => {
-    User.find({})
+    const query = {};
+    const sortPriority = { 'Dragon': 1, 'Blue': 2, 'Sillver': 3 }; // Add more if necessary
+
+    if (req.query.displayname) {
+        query.displayname = { $regex: new RegExp(req.query.displayname, "i") };
+    }
+    
+    User.find(query)
         .then((users) => {
+            users.sort((a, b) => {
+                const aPriority = sortPriority[a.tier] || Infinity;
+                const bPriority = sortPriority[b.tier] || Infinity;
+                return aPriority - bPriority;
+            });
             res.json(users);
         })
         .catch((err) => {
@@ -20,65 +31,69 @@ exports.getAllUser = (req, res) => {
         });
 };
 
+
+
 //get user by Email and id
 exports.getUser = (req, res) => {
     const { id } = req.query;
     User.findOne({ _id: id })
-      .then((user) => {
-        if (!user) {
-          console.log(`User with id ${id} not found`);
-          return res.status(404).json({ error: "User not found" });
-        }
-  
-        res.json(user);
-      })
-      .catch((err) => {
-        console.error(`Error fetching user with id ${id}:`, err);
-        res.status(500).json({ error: "An error occurred while fetching the user." });
-      });
-  };
-  
+        .then((user) => {
+            if (!user) {
+                console.log(`User with id ${id} not found`);
+                return res.status(404).json({ error: "User not found" });
+            }
+
+            res.json(user);
+        })
+        .catch((err) => {
+            console.error(`Error fetching user with id ${id}:`, err);
+            res.status(500).json({ error: "An error occurred while fetching the user." });
+        });
+};
+
 
 
 
 // Edit user by email
 exports.editUser = async (req, res) => {
-    
-    const {emailSearch} = req.params
-    const { password, displayname, tier, role, bio, profile_img } = req.body;
+
+    const { emailSearch } = req.params
 
     const updateFields = {};
 
-    if (password) {
-        if (!validator.isStrongPassword(password)) {
+    if ( req.body.password) {
+        if (!validator.isStrongPassword( req.body.password)) {
             return res.status(400).json({ error: 'Password not strong!' });
         }
         // Hash user's password
         const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash( req.body.password, saltRounds);
         updateFields.password = hashedPassword;
     }
 
-    if (displayname) {
-        updateFields.displayname = displayname;
+    if ( req.body.displayname) {
+        updateFields.displayname =  req.body.displayname;
     }
-    if (profile_img) {
-        updateFields.profile_img = profile_img;
-    }
-
-    if (tier) {
-        updateFields.tier = tier;
+    if ( req.body.profile_img) {
+        updateFields.profile_img =  req.body.profile_img;
     }
 
-    if (role) {
-        updateFields.role = role;
+    if ( req.body.tier) {
+        updateFields.tier =  req.body.tier;
     }
-    if (bio) {
-        updateFields.bio = bio;
+
+    if ( req.body.role) {
+        updateFields.role =  req.body.role;
+    }
+    if ( req.body.bio) {
+        updateFields.bio =  req.body.bio;
+    }
+    if ( req.body.email) {
+        updateFields.email =  req.body.email;
     }
 
     try {
-        const user = await User.findOneAndUpdate({ email:emailSearch}, updateFields, { new: true });
+        const user = await User.findOneAndUpdate({ email: emailSearch }, updateFields, { new: true });
         if (!user) {
             console.log(`User with emailSearch ${emailSearch} not found`);
             return res.status(404).json({ error: "User not found" });
@@ -90,5 +105,22 @@ exports.editUser = async (req, res) => {
         console.error(`Error updating user with email ${emailSearch}:`, error);
         res.status(500).json({ error: "An error occurred while updating the user." });
     }
-    
+
+};
+
+exports.deleteUser = (req, res) => {
+    const { id } = req.params;
+
+    User.findByIdAndDelete(id)
+        .then((user) => {
+            if (!user) {
+                console.log(`User with id ${id} not found`);
+                return res.status(404).json({ error: "User not found" });
+            }
+            res.json({ message: `User with id ${id} has been deleted successfully.` });
+        })
+        .catch((err) => {
+            console.error(`Error deleting user with id ${id}:`, err);
+            res.status(500).json({ error: "An error occurred while deleting the user." });
+        });
 };

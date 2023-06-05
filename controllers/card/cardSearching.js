@@ -15,24 +15,26 @@ const createFilters = (req) => {
   const filters = {};
 
   ['frameType', 'desc', 'archetype', 'attribute', 'type', 'race'].forEach((field) => {
-    if (req.query[field]) {
+    if (req.query[field] && req.query[field] !== '') {
       filters[field] = req.query[field].trim();
     }
   });
 
   ['atk', 'def'].forEach((field) => {
-    if (req.query[`${field}Min`] || req.query[`${field}Max`]) {
-      filters[field] = {};
-      if (req.query[`${field}Min`]) {
+    if (req.query[`${field}Min`] !== '0' || req.query[`${field}Max`] !== '10000') {
+      if (!filters[field]) {
+        filters[field] = {};
+      }
+      if (req.query[`${field}Min`] && req.query[`${field}Min`] !== '0') {
         filters[field].$gte = parseInt(req.query[`${field}Min`]);
       }
-      if (req.query[`${field}Max`]) {
+      if (req.query[`${field}Max`] && req.query[`${field}Max`] !== '10000') {
         filters[field].$lte = parseInt(req.query[`${field}Max`]);
       }
     }
   });
 
-  if (req.query.level) {
+  if (req.query.level && req.query.level !== '0') {
     const levels = req.query.level.split(',').map(Number);
     if (levels.includes(0)) {
       filters.level = { $in: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15] };
@@ -41,25 +43,21 @@ const createFilters = (req) => {
     }
   }
 
-  if (req.query.name) {
-    // Create a case-insensitive regex to filter by name
+  if (req.query.name && req.query.name !== '') {
     filters.name = { $regex: new RegExp(req.query.name, 'i') };
-  }
-
-  if (req.query.type) {
-    const types = req.query.type.split(',').map((type) => type.trim());
-    filters.type = { $in: types };
-  }
-
-  if (req.query.race) {
-    const races = req.query.race.split(',').map((race) => race.trim());
-    filters.race = { $in: races };
   }
 
   return filters;
 };
 
+
 exports.getAllCards = (req, res) => {
+  if(!(req.query.defMin || req.query.defMax || req.query.atkMin || req.query.atkMax)){
+    req.query.defMin = '0'
+    req.query.defMax = '10000'
+    req.query.atkMin = '0'
+    req.query.atkMax = '10000'
+  }
   if (req.query.id) {
     const cardIds = req.query.id.split(',').map(id => id.trim());
     handleCardSearchResponse(
@@ -83,7 +81,7 @@ exports.getAllCards = (req, res) => {
 
     // Sorting options
     const sortOptions = {};
-    
+  
     if (req.query.sort === "az") {
       sortOptions.name = 1;
     } else if (req.query.sort === "za") { 
@@ -91,9 +89,6 @@ exports.getAllCards = (req, res) => {
     }else   { 
       sortOptions.createdAt = parseInt(req.query.sort)
     }
-    
-
-
     handleCardSearchResponse(
       Card.find(filters).sort(sortOptions).skip(offset).limit(limit),
       res,

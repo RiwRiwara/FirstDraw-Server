@@ -73,9 +73,80 @@ exports.deleteCollectionById = (req, res) => {
 
 
 // Update a collection by ID
+// exports.updateCollectionById = (req, res) => {
+//   const collectionId = req.params.collectionId;
+//   const { collection_name, addItems, removeItems, desc , tier} = req.body;
+
+//   const updateData = {};
+
+//   if (collection_name) {
+//     updateData.collection_name = collection_name;
+//   }
+//   if (desc) {
+//     updateData.desc = desc;
+//   }
+
+//   // Get the typeCollect from the collection document
+//   Collection.findById(collectionId)
+//     .then(collection => {
+//       if (!collection) {
+//         return res.status(404).json({ error: "Collection not found." });
+//       }
+
+//       if (addItems) {
+//         if (collection.typeCollect === "deck") {
+//           // Limit item length to 0-60
+//           if (collection.itemIds.length > 60) {
+//             return res.status(400).json({ error: "The item length exceeds the limit for a deck." });
+//           }
+//           // Check for duplicate cards (up to 3)
+//           var count = 0;
+//           for (var i = 0; i < collection.itemIds.length ; i++) {
+//             if (collection.itemIds[i] === addItems[0]) {
+//               count++;
+//             }
+//           }
+
+//           if (count > 2) {
+//             return res.status(400).json({ error: "Each card in a deck can be duplicated up to three times." });
+//           }
+
+//         }
+//         updateData.$push = { itemIds: { $each: addItems } }; // Use $push to append items to the array
+//       }
+
+//       if (removeItems) {
+//         const index = collection.itemIds.indexOf(removeItems[0]);
+//         if (index !== -1) {
+//           collection.itemIds.splice(index, 1);
+//           updateData.itemIds = collection.itemIds;
+//         }
+//       }
+      
+
+
+//       Collection.findByIdAndUpdate(collectionId, updateData, { new: true })
+//         .then(updatedCollection => {
+//           if (!updatedCollection) {
+//             return res.status(404).json({ error: "Collection not found." });
+//           }
+//           res.json(updatedCollection);
+//         })
+//         .catch(error => {
+//           console.error("Error updating collection:", error);
+//           res.status(500).json({ error: "An error occurred while updating the collection." });
+//         });
+//     })
+//     .catch(error => {
+//       console.error("Error finding collection:", error);
+//       res.status(500).json({ error: "An error occurred while finding the collection." });
+//     });
+// };
+
+
 exports.updateCollectionById = (req, res) => {
   const collectionId = req.params.collectionId;
-  const { collection_name, addItems, removeItems, desc } = req.body;
+  const { collection_name, addItems, removeItems, desc , tier} = req.body;
 
   const updateData = {};
 
@@ -86,7 +157,7 @@ exports.updateCollectionById = (req, res) => {
     updateData.desc = desc;
   }
 
-  // Get the typeCollect from the collection document
+  // Get the typeCollect and tier from the collection document
   Collection.findById(collectionId)
     .then(collection => {
       if (!collection) {
@@ -94,6 +165,14 @@ exports.updateCollectionById = (req, res) => {
       }
 
       if (addItems) {
+        // Check the tier of the collection and enforce the respective item limit
+        const tierLimits = { Silver: 50, Blue: 100, Dragon: Infinity };
+        const tierLimit = tierLimits[collection.tier];
+
+        if (collection.itemIds.length + addItems.length > tierLimit) {
+          return res.status(400).json({ error: `The item length exceeds the limit for the ${collection.tier} tier.` });
+        }
+
         if (collection.typeCollect === "deck") {
           // Limit item length to 0-60
           if (collection.itemIds.length > 60) {
@@ -122,8 +201,6 @@ exports.updateCollectionById = (req, res) => {
           updateData.itemIds = collection.itemIds;
         }
       }
-      
-
 
       Collection.findByIdAndUpdate(collectionId, updateData, { new: true })
         .then(updatedCollection => {

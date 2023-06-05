@@ -22,6 +22,10 @@ const requestSchema = new mongoose.Schema({
     note:{
         type: String,
         required: false
+    },
+    type:{
+        type: String,
+        required: false
     }
 }, { timestamps: true });
 

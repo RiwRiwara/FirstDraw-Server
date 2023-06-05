@@ -89,6 +89,7 @@ exports.getAllCards = (req, res) => {
     }else   { 
       sortOptions.createdAt = parseInt(req.query.sort)
     }
+
     handleCardSearchResponse(
       Card.find(filters).sort(sortOptions).skip(offset).limit(limit),
       res,

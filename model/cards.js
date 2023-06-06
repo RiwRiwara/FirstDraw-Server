@@ -60,7 +60,11 @@ const cardSchema = new mongoose.Schema({
     ebay_price: String,
     amazon_price: String,
     coolstuffinc_price: String,
-  }]
+  }],
+  pick:{
+    type: Number,
+    required: false,
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Cards", cardSchema);

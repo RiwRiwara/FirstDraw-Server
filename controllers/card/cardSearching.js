@@ -97,3 +97,16 @@ exports.getAllCards = (req, res) => {
     );
   }
 };
+
+
+exports.getTopPickedCards = async (req, res) => {
+  try {
+    let cards = await Card.find()
+      .sort({ pick: -1 })  // Descending order
+      .limit(10);
+    res.json(cards);
+  } catch (err) {
+    console.error(`Error retrieving top picked cards:`, err);
+    res.status(500).json({ error: "An error occurred while retrieving the cards." });
+  }
+};

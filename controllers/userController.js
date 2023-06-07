@@ -124,3 +124,43 @@ exports.deleteUser = (req, res) => {
             res.status(500).json({ error: "An error occurred while deleting the user." });
         });
 };
+
+
+exports.getUserSummary = (req, res) => {
+    User.aggregate([
+        {
+            $group: {
+                _id: "$tier",
+                count: { $sum: 1 },
+            },
+        },
+        {
+            $group: {
+                _id: null,
+                total: { $sum: "$count" },
+                details: {
+                    $push: {
+                        tier: "$_id",
+                        count: "$count",
+                    },
+                },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+            },
+        },
+    ])
+        .then((summary) => {
+            if (!summary || summary.length === 0) {
+                return res.status(404).json({ error: "No users found" });
+            }
+
+            res.json(summary[0]);
+        })
+        .catch((err) => {
+            console.error(`Error fetching user summary:`, err);
+            res.status(500).json({ error: "An error occurred while fetching the user summary." });
+        });
+};

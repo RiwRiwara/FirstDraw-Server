@@ -7,13 +7,15 @@ const {
 } = require("../controllers/card/cardController");
 const {
     getAllCards,
-    getTopPickedCards
+    getTopPickedCards,
+    getCardSummary
 } = require("../controllers/card/cardSearching")
 
 const router = express.Router();
 
 router.get("/cards", getAllCards);
 router.get("/toppickedcards", getTopPickedCards);
+router.get("/cards/summary", getCardSummary);
 
 router.delete("/cards/:id", removeCardById);
 router.post("/cards/create", createCard);

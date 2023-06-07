@@ -4,11 +4,13 @@ const {
     getUser,
     getAllUser,
     editUser,
-    deleteUser
+    deleteUser,
+    getUserSummary
 } = require("../controllers/userController");
 
 const router = express.Router();
 
+router.get("/users/summary",getUserSummary);
 router.get("/users/",getAllUser);
 // router.get("/users/",authenticate, getAllUser);
 router.get("/user/", getUser);

@@ -110,3 +110,42 @@ exports.getTopPickedCards = async (req, res) => {
     res.status(500).json({ error: "An error occurred while retrieving the cards." });
   }
 };
+
+
+exports.getCardSummary = async (req, res) => {
+  try {
+      const totalCards = await Card.countDocuments();
+
+      const typeCount = await Card.aggregate([
+          { $group: { _id: "$type", count: { $sum: 1 } } }
+      ]);
+
+      const frameTypeCount = await Card.aggregate([
+          { $group: { _id: "$frameType", count: { $sum: 1 } } }
+      ]);
+
+      const raceCount = await Card.aggregate([
+          { $group: { _id: "$race", count: { $sum: 1 } } }
+      ]);
+
+      const attributeCount = await Card.aggregate([
+          { $group: { _id: "$attribute", count: { $sum: 1 } } }
+      ]);
+
+      const levelCount = await Card.aggregate([
+          { $group: { _id: "$level", count: { $sum: 1 } } }
+      ]);
+
+      res.json({
+          totalCards,
+          typeCount,
+          frameTypeCount,
+          raceCount,
+          attributeCount,
+          levelCount,
+      });
+  } catch (error) {
+      console.error(`Error fetching card summary:`, error);
+      res.status(500).json({ error: "An error occurred while fetching the card summary." });
+  }
+};

@@ -104,8 +104,6 @@ exports.updatePick = async (req, res) => {
       return res.status(404).json({ error: "Card not found" });
     }
     if (!card.pick) {
-      console.log("==Zero++")
-      console.log(card)
       card.pick = 0;
     }
     if (action === "i") {
